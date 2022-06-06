@@ -1,4 +1,12 @@
-const { ADD_NICKNAME, SUCCESS_CONNECTED, ADD_USER, USER_LEAVE, CONNECT_USER, SEND_MESSAGE, GET_MESSAGE } = require('./events');
+const {
+  ADD_NICKNAME,
+  ADD_USER,
+  ADD_USER_INITIAL,
+  USER_LEAVE,
+  CONNECT_USER,
+  SEND_MESSAGE,
+  GET_MESSAGE,
+} = require('./events');
 
 class Socket {
   io;
@@ -37,10 +45,6 @@ class Socket {
     }
   }
 
-  emitAllUsers() {
-
-  }
-
   addUsernameInSocketByID(id, username) {
     this.addDataInSocketByID(id, { username });
   }
@@ -61,45 +65,18 @@ class Socket {
 
         clients.forEach(client => {
           this.getSocketByID(client.id).emit(ADD_USER, { id: socket.id, username });
-          socket.emit(ADD_USER, { id: client.id, username: client.data.username });
+          socket.emit(ADD_USER_INITIAL, { id: client.id, username: client.data.username });
         });
-
-        // console.log(clients, this.getAllSocketsWithData(), 's')
       });
 
-      socket.on(SEND_MESSAGE, ({ id, message }) => {
-        socket.to(id).emit(GET_MESSAGE, { id: socket.id, message });
+      socket.on(SEND_MESSAGE, ({ id, username, message }) => {
+        socket.to(id).emit(GET_MESSAGE, { id: socket.id, username, message });
       });
 
       socket.on(CONNECT_USER, ({ id }) => {
-
         console.log(id, 'username');
-        // const chatRoom = this.io.sockets.adapter.rooms.get(this.getUsernameByID(socket.id));
-
-        // if (chatRoom) {
-
-        // } else {
-        //   socket.join(username);
-        // }
-        // console.log(username, this.getUsernameByID(socket.id), 'sosss')
-
-        // console.log(socket.rooms, id, this.io.sockets.adapter.rooms, 'rooms');
-
-        // const chatRooms = Array.from(this.io.sockets.adapter.rooms.entries())
-        //   .filter(([ roomID, clientsID ]) => new RegExp(prefixChat).test(roomID));
-
-        // console.log(chatRoom, 'chatRoom');
-        // console.log(Array.from(this.io.sockets.adapter.rooms.entries()), 'entries')
       });
-
-      // const clientSocket = this.io.sockets.sockets.get(socket.id);
-
-      // clientSocket.data = {
-        // wewe: 'www'
-      // }
-      // console.log(this.io.sockets.sockets)
-      // console.log(this.getIDClients(), 'socket')
-      // socket.join(socket.request._query.id);
+      
       socket.on('disconnect', () => {
         console.info(`Клиент отключился  id(${socket.id})`);
 
@@ -109,8 +86,6 @@ class Socket {
           this.getSocketByID(client.id).emit(USER_LEAVE, { id: socket.id });
         });
       });
-
-      socket.emit(SUCCESS_CONNECTED);
       
     });
   }
