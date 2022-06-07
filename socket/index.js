@@ -83,7 +83,7 @@ class Socket {
         const clients = this.getAllSocketsWithData(socket.id);
 
         clients.forEach(client => {
-          this.getSocketByID(client.id).emit(USER_LEAVE, { id: socket.id });
+          this.getSocketByID(client.id).emit(USER_LEAVE, { id: socket.id, username: socket.data.username });
         });
       });
       
