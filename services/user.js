@@ -5,7 +5,7 @@ class UserService {
     checkSocket(username) {
         const existsSockets = Socket.getAllSocketsWithData();
 
-        if (existsSockets.find(socketData => socketData.data.username === username)) {
+        if (existsSockets.find(socketData => socketData.data.username === username.trim())) {
             throw formatExpressValidatorErrors({ array() {
                 return [
                     {
